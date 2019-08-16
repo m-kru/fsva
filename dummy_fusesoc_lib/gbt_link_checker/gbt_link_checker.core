@@ -1,0 +1,41 @@
+CAPI=2:
+
+name: ::gbt_link_checker
+
+filesets:
+    rtl:
+        files:
+            - rtl/gbt_pattern_checker.vhd
+            - rtl/gbt_pattern_generator.vhd
+            - rtl/gbt_link_checker.vhd
+        file_type: vhdlSource-2008
+        depend:
+            - :vhdl_simple:mux_2x1
+
+    tb:
+        files:
+            - tb/gbt_pattern_checker_tb.vhd
+            - tb/gbt_pattern_generator_tb.vhd
+        file_type: vhdlSource-2008
+
+targets:
+    default:
+        filesets:
+            - rtl
+
+    generator_tb:
+        default_tool: ghdl
+        toplevel: gbt_pattern_generator_tb
+        filesets:
+            - rtl
+            - tb
+
+    checker_tb:
+        default_tool: ghdl
+        tools:
+            ghdl:
+                analyze_options: [-frelaxed-rules]
+        toplevel: gbt_pattern_checker_tb
+        filesets:
+            - rtl
+            - tb

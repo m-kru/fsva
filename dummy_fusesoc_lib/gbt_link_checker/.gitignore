@@ -1,0 +1,5 @@
+build/
+*_tb
+/work/*
+*.ghw
+e~*
