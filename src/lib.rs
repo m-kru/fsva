@@ -81,16 +81,21 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
     }
 
 
-    println!("\nVERIFICATION SUMMARY:");
-    println!("  Total verification time: {}", ms_to_min_s_ms(time_measure.elapsed().as_millis()));
-    println!("  TARGETS:  {}", num_targets);
-    println!("  PASSED:   {} ({:.2}%)",
+    let summary = format!("\nVERIFICATION SUMMARY:
+  Total verification time: {}
+  TARGETS:  {}
+  PASSED:   {} ({:.2}%)
+  FAILED:   {} ({:.2}%)
+  WARNINGS: {}\n",
+        ms_to_min_s_ms(time_measure.elapsed().as_millis()),
+        num_targets,
         num_passed,
-        num_passed as f32 / num_targets as f32 * 100.0);
-    println!("  FAILED:   {} ({:.2}%)",
+        num_passed as f32 / num_targets as f32 * 100.0,
         num_failed,
-        num_failed as f32 / num_targets as f32 * 100.0);
-    println!("  WARNINGS: {}\n", num_warnings);
+        num_failed as f32 / num_targets as f32 * 100.0,
+        num_warnings);
+
+    println!("{}", summary);
 
     if !all_passed {
         return Err("At least one verification target failed. Check summary for details.");
