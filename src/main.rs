@@ -46,7 +46,7 @@ fn main() {
         .arg("--version")
         .output()
         .expect("Failed to launch fusesoc, is it installed?");
-    print!("Found fusesoc version {}", String::from_utf8(output.stdout).unwrap());
+    print!("Found fusesoc version {}\n", String::from_utf8(output.stdout).unwrap());
 
     if let Err(e) = fsva::run(config) {
         eprintln!("Application error: {}", e);

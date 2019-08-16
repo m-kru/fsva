@@ -5,17 +5,19 @@ use std::io;
 use std::io::prelude::*;
 use std::path::PathBuf;
 use std::process;
+use std::time;
 
 use clap::ArgMatches;
 use serde_yaml as sy;
 use chrono::prelude::Utc;
 
 pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
+    let now = time::Instant::now();
     let workpath = string_to_path(config.value_of("workpath").unwrap().to_string());
     set_current_dir(&workpath)?;
 
     let core_files = find_core_files(&workpath)?;
-    println!("{:?}", core_files);
+//    println!("{:?}", core_files);
 
     if core_files.is_empty() {
         return Err(format!("No .core files found under the workpath: {:?}.", workpath).into());
@@ -29,7 +31,7 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     if verification_targets.is_empty() {
         return Err(format!("No verification targets found.").into());
     }
-    println! {"{:#?}", verification_targets};
+//    println! {"{:#?}", verification_targets};
 
     let date_utc = Utc::now()
                     .format("%Y-%m-%d_%H:%M:%S")
@@ -37,7 +39,7 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
 
     let outpath: PathBuf = workpath.join(config.value_of("outdir").unwrap().to_string())
                     .join(date_utc);
-    println!("{:?}", outpath);
+//    println!("{:?}", outpath);
     fs::create_dir_all(&outpath)?;
 
     for target in &mut verification_targets {
@@ -47,14 +49,15 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     for target in &mut verification_targets {
         target.verify()?;
     }
-    println! {"{:#?}", verification_targets};
+//    println! {"{:#?}", verification_targets};
 
-    summarize(verification_targets)?;
+    summarize(verification_targets, now)?;
 
     Ok(())
 }
 
-fn summarize(verification_targets: Vec<VerificationTarget>) -> Result<(), &'static str> {
+fn summarize(verification_targets: Vec<VerificationTarget>,
+             time_measure: time::Instant) -> Result<(), &'static str> {
     let num_targets = verification_targets.len();
     let num_passed = verification_targets.iter()
                             .filter(|x| x.passed)
@@ -67,32 +70,45 @@ fn summarize(verification_targets: Vec<VerificationTarget>) -> Result<(), &'stat
     for target in verification_targets {
         if !target.passed {
             all_passed = false;
+            println!("\nFAILED: core: {}, target: {}", target.core_name, target.target_name);
         }
 
         if target.number_of_warnings > 0 {
-            println!("Warnings found for core: {}, target: {}", target.core_name, target.target_name);
-            println!("For more details check file: {:?}", target.output_file);
-
             num_warnings += target.number_of_warnings;
+
+            println!("Warnings found for core: {}, target: {}", target.core_name, target.target_name);
+        }
+
+        if !target.passed || target.number_of_warnings > 0 {
+            println!("For more details check file: {:?}\n", target.output_file);
         }
     }
 
 
-    println!("VERIFICATION SUMMARY:");
-    println!("TARGETS:  {}", num_targets);
-    println!("PASSED:   {} ({:.2}%)",
+    println!("\nVERIFICATION SUMMARY:");
+    println!("  Total verification time: {}", ms_to_min_s_ms(time_measure.elapsed().as_millis()));
+    println!("  TARGETS:  {}", num_targets);
+    println!("  PASSED:   {} ({:.2}%)",
         num_passed,
         num_passed as f32 / num_targets as f32 * 100.0);
-    println!("FAILED:   {} ({:.2}%)",
+    println!("  FAILED:   {} ({:.2}%)",
         num_failed,
         num_failed as f32 / num_targets as f32 * 100.0);
-    println!("WARNINGS: {}", num_warnings);
+    println!("  WARNINGS: {}\n", num_warnings);
 
     if !all_passed {
         return Err("At least one verification target failed. Check summary for details.");
     }
 
     Ok(())
+}
+
+fn ms_to_min_s_ms(ms_in: u128) -> String {
+    let ms = ms_in % 1000;
+    let s = (ms_in / 1000) % 60;
+    let min = ms_in / 1000 / 60;
+
+    format!("{} min {} s {} ms", min, s, ms).to_string()
 }
 
 #[derive(Clone, Debug)]
@@ -179,7 +195,7 @@ impl VerificationTarget {
         //let file_name = self.core_name.clone().trim_start_matches('c').to_owned();
         let file_name = self.core_name.trim_start_matches(':')
                             .replace(":", "-") + "_" + &self.target_name;
-        println!("{}", file_name);
+       // println!("{}", file_name);
         //self.output_file = outpath.join(self.core_name.clone() + &self.target_name.clone());
         self.output_file = outpath.join(file_name);
 
@@ -188,6 +204,7 @@ impl VerificationTarget {
     }
 
         fn verify(&mut self) -> io::Result<()> {
+            println!("Verifying core: {}, target: {}", self.core_name, self.target_name);
             let output = process::Command::new(self.command.clone())
                 .args(self.command_arguments.clone())
                 .output()?;
@@ -203,7 +220,7 @@ impl VerificationTarget {
             file.write_all(b"\n***** STANDARD OUTPUT *****\n\n")?;
             file.write_all(&output.stdout)?;
 
-            println!("{:#?}", output);
+//            println!("{:#?}", output);
             Ok(())
         }
 }
@@ -253,5 +270,12 @@ mod tests {
         let p = PathBuf::from("/tmp/abc/def");
 
         assert_eq!(p, string_to_path(s));
+    }
+
+    #[test]
+    fn test_ms_to_min_s_ms() {
+        assert_eq!("0 min 0 s 7 ms", ms_to_min_s_ms(7));
+        assert_eq!("0 min 1 s 48 ms", ms_to_min_s_ms(1048));
+        assert_eq!("17 min 5 s 13 ms", ms_to_min_s_ms(1025013));
     }
 }
