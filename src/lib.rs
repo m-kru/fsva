@@ -17,7 +17,6 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     set_current_dir(&workpath)?;
 
     let core_files = find_core_files(&workpath)?;
-//    println!("{:?}", core_files);
 
     if core_files.is_empty() {
         return Err(format!("No .core files found under the workpath: {:?}.", workpath).into());
@@ -31,7 +30,6 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     if verification_targets.is_empty() {
         return Err(format!("No verification targets found.").into());
     }
-//    println! {"{:#?}", verification_targets};
 
     let date_utc = Utc::now()
                     .format("%Y-%m-%d_%H:%M:%S")
@@ -39,7 +37,6 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
 
     let outpath: PathBuf = workpath.join(config.value_of("outdir").unwrap().to_string())
                     .join(date_utc);
-//    println!("{:?}", outpath);
     fs::create_dir_all(&outpath)?;
 
     for target in &mut verification_targets {
@@ -49,7 +46,6 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     for target in &mut verification_targets {
         target.verify()?;
     }
-//    println! {"{:#?}", verification_targets};
 
     summarize(verification_targets, now)?;
 
@@ -191,12 +187,8 @@ impl VerificationTarget {
     }
 
     fn prepare_for_verification(&mut self, outpath: &PathBuf) {
-        //let mut file_name = self.core_name.clone().replace(":","-");
-        //let file_name = self.core_name.clone().trim_start_matches('c').to_owned();
         let file_name = self.core_name.trim_start_matches(':')
                             .replace(":", "-") + "_" + &self.target_name;
-       // println!("{}", file_name);
-        //self.output_file = outpath.join(self.core_name.clone() + &self.target_name.clone());
         self.output_file = outpath.join(file_name);
 
         self.command_arguments.push(self.target_name.clone());
@@ -220,7 +212,6 @@ impl VerificationTarget {
             file.write_all(b"\n***** STANDARD OUTPUT *****\n\n")?;
             file.write_all(&output.stdout)?;
 
-//            println!("{:#?}", output);
             Ok(())
         }
 }
