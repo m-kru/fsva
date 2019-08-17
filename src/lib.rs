@@ -80,8 +80,8 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
             num_warnings += target.number_of_warnings;
 
             print_summary(&mut summary_file,
-                         &format!("WARNINGS: core: {}, target: {}\n",
-                                  target.core_name, target.target_name))?;
+                         &format!("WARNINGS ({}): core: {}, target: {}\n",
+                                  target.number_of_warnings, target.core_name, target.target_name))?;
         }
 
         if !target.passed || target.number_of_warnings > 0 {

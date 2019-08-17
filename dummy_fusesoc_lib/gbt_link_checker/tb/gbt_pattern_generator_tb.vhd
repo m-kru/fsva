@@ -39,8 +39,6 @@ begin
  
         report "this is a serious message" severity warning;
 
-        report "this is even more serious message" severity WARNING;
-
         wait for 4 * CLK_PERIOD;
 
         assert 1 = 2 report "Error" severity failure;
