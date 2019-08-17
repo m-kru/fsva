@@ -49,7 +49,7 @@ fn main() {
     print!("Found fusesoc version {}\n", String::from_utf8(output.stdout).unwrap());
 
     if let Err(e) = fsva::run(config) {
-        eprintln!("Application error: {}", e);
+        eprintln!("\nApplication error: {}", e);
 
         process::exit(1);
     }

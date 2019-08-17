@@ -47,41 +47,53 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
         target.verify()?;
     }
 
-    summarize(verification_targets, now)?;
-
-    Ok(())
+    Ok(summarize(verification_targets, &outpath, now)?)
 }
 
 fn summarize(verification_targets: Vec<VerificationTarget>,
-             time_measure: time::Instant) -> Result<(), &'static str> {
+             outpath: &PathBuf,
+             time_measure: time::Instant) -> Result<(), Box<dyn Error>> {
     let num_targets = verification_targets.len();
     let num_passed = verification_targets.iter()
                             .filter(|x| x.passed)
                             .count();
     let num_failed = num_targets - num_passed;
 
+    let mut summary_file = fs::File::create(outpath.clone().join("summary"))?;
+
     let mut all_passed = true;
     let mut num_warnings = 0;
 
     for target in verification_targets {
-        if !target.passed {
+        if target.passed {
+            print_summary(&mut summary_file,
+                          &format!("PASSED: core: {}, target: {}\n",
+                          target.core_name, target.target_name))?;
+        } else {
             all_passed = false;
-            println!("\nFAILED: core: {}, target: {}", target.core_name, target.target_name);
+            print_summary(&mut summary_file,
+                         &format!("FAILED: core: {}, target: {}\n",
+                                  target.core_name, target.target_name))?;
         }
 
         if target.number_of_warnings > 0 {
             num_warnings += target.number_of_warnings;
 
-            println!("Warnings found for core: {}, target: {}", target.core_name, target.target_name);
+            print_summary(&mut summary_file,
+                         &format!("WARNINGS: core: {}, target: {}\n",
+                                  target.core_name, target.target_name))?;
         }
 
         if !target.passed || target.number_of_warnings > 0 {
-            println!("For more details check file: {:?}\n", target.output_file);
+            print_summary(&mut summary_file,
+                         &format!("For more details check file: {:?}\n",
+                                  target.output_file))?;
         }
+
+        print_summary(&mut summary_file, &format!("\n"))?;
     }
 
-
-    let summary = format!("\nVERIFICATION SUMMARY:
+    let summary = format!("VERIFICATION SUMMARY:
   Total verification time: {}
   TARGETS:  {}
   PASSED:   {} ({:.2}%)
@@ -89,17 +101,25 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
   WARNINGS: {}\n",
         ms_to_min_s_ms(time_measure.elapsed().as_millis()),
         num_targets,
-        num_passed,
-        num_passed as f32 / num_targets as f32 * 100.0,
-        num_failed,
-        num_failed as f32 / num_targets as f32 * 100.0,
+        num_passed, num_passed as f32 / num_targets as f32 * 100.0,
+        num_failed, num_failed as f32 / num_targets as f32 * 100.0,
         num_warnings);
 
-    println!("{}", summary);
+    print_summary(&mut summary_file, &summary)?;
 
     if !all_passed {
-        return Err("At least one verification target failed. Check summary for details.");
+        return Err("At least one verification target failed. Check summary for details.".into());
     }
+
+    Ok(())
+}
+
+fn print_summary(f: &mut fs::File, s: &str) -> io::Result<()> {
+
+    print!("{}", s);
+    io::stdout().flush()?;
+
+    f.write_all(s.as_bytes())?;
 
     Ok(())
 }
