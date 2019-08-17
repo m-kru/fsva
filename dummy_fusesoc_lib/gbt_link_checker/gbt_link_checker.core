@@ -12,10 +12,19 @@ filesets:
         depend:
             - :vhdl_simple:mux_2x1
 
-    tb:
+    tb_checker:
         files:
             - tb/gbt_pattern_checker_tb.vhd
+        file_type: vhdlSource-2008
+
+    tb_1_gen:
+        files:
             - tb/gbt_pattern_generator_tb.vhd
+        file_type: vhdlSource-2008
+
+    tb_2_gen:
+        files:
+            - tb/gbt_pattern_generator_2_tb.vhd
         file_type: vhdlSource-2008
 
 targets:
@@ -23,12 +32,19 @@ targets:
         filesets:
             - rtl
 
-    generator_tb:
+    generator_1_tb:
         default_tool: ghdl
         toplevel: gbt_pattern_generator_tb
         filesets:
             - rtl
-            - tb
+            - tb_1_gen
+
+    generator_2_tb:
+        default_tool: ghdl
+        toplevel: gbt_pattern_generator_2_tb
+        filesets:
+            - rtl
+            - tb_2_gen
 
     checker_tb:
         default_tool: ghdl
@@ -38,4 +54,4 @@ targets:
         toplevel: gbt_pattern_checker_tb
         filesets:
             - rtl
-            - tb
+            - tb_checker
