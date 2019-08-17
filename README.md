@@ -7,8 +7,11 @@ the verification process of libraries and HDL design projects managed
 with [FuseSoc](https://github.com/olofk/fusesoc) build tool/system.
 
 fsva in no way duplicates or replaces functionalities provided by the FuseSoc.
+Ccolloquially speaking, fsva is a wrapper for FuseSoc automating
+the verification process.
 
-### Why
+### Why?
+Why not?
 
 ## How it works
 fsva scans recursively for `.core` files and fetches all targets starting
