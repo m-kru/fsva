@@ -145,7 +145,7 @@ struct VerificationTarget {
     command_arguments: Vec<String>,
     // Attributes for verification results.
     passed: bool,
-    number_of_warnings: u32,
+    number_of_warnings: usize,
     // TODO: add attribute with time for verification
 }
 
@@ -220,25 +220,30 @@ impl VerificationTarget {
         self.command_arguments.push(self.core_name.clone());
     }
 
-        fn verify(&mut self) -> io::Result<()> {
-            println!("Verifying core: {}, target: {}", self.core_name, self.target_name);
-            let output = process::Command::new(self.command.clone())
-                .args(self.command_arguments.clone())
-                .output()?;
+    fn verify(&mut self) -> io::Result<()> {
+        println!("Verifying core: {}, target: {}", self.core_name, self.target_name);
+        let output = process::Command::new(self.command.clone())
+            .args(self.command_arguments.clone())
+            .output()?;
 
-            if output.status.success() {
-                self.passed = true;
-            }
-
-            let mut file = fs::File::create(self.output_file.clone())?;
-            file.write_all(b"***** STANDARD ERROR *****\n\n")?;
-            file.write_all(&output.stderr)?;
-
-            file.write_all(b"\n***** STANDARD OUTPUT *****\n\n")?;
-            file.write_all(&output.stdout)?;
-
-            Ok(())
+        if output.status.success() {
+            self.passed = true;
         }
+
+        let mut file = fs::File::create(self.output_file.clone())?;
+        file.write_all(b"***** STANDARD ERROR *****\n\n")?;
+        file.write_all(&output.stderr)?;
+
+        file.write_all(b"\n***** STANDARD OUTPUT *****\n\n")?;
+        file.write_all(&output.stdout)?;
+
+        self.number_of_warnings = std::str::from_utf8(&output.stdout).unwrap()
+                                    .to_lowercase()
+                                    .matches("warn")
+                                    .count();
+
+        Ok(())
+    }
 }
 
 pub fn string_to_path(val: String) -> PathBuf {
