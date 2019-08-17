@@ -33,6 +33,7 @@ fn main() {
                 .help("Number of processes allowed to be spawn in parallel.")
                 .takes_value(true)
                 .default_value("1")
+                .validator(numprocesses_validator)
         )
         .arg(
             Arg::with_name("compress")
@@ -41,6 +42,16 @@ fn main() {
                 .help("Automatically compress output directory if all tests pass.")
         )
         .get_matches();
+
+    if config.is_present("compress") {
+        println!("Compression of the output directory is not yet supported.");
+        process::exit(1);
+    }
+
+    if config.value_of("numprocesses").unwrap().parse::<u32>().unwrap() > 1 {
+        println!("Parallel verification is not yet supported.");
+        process::exit(1);
+    }
 
     let output = process::Command::new("fusesoc")
         .arg("--version")
@@ -63,4 +74,11 @@ fn workpath_validator(val: String) -> Result<(), String> {
     }
 
     Err(format!("{:?} workpath does not exist.", workpath))
+}
+
+fn numprocesses_validator(val: String) -> Result<(), String> {
+    match val.parse::<u32>() {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e.to_string()),
+    }
 }
