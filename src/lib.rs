@@ -10,6 +10,8 @@ use std::time;
 use clap::ArgMatches;
 use serde_yaml as sy;
 use chrono::prelude::Utc;
+use tar;
+use flate2::{Compression, write::GzEncoder};
 
 pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     let now = time::Instant::now();
@@ -32,7 +34,7 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     }
 
     let date_utc = Utc::now()
-                    .format("%Y-%m-%d_%H:%M:%S")
+                    .format("%Y-%m-%d_%H-%M-%S")
                     .to_string();
 
     let outpath: PathBuf = workpath.join(config.value_of("outdir").unwrap().to_string())
@@ -42,8 +44,15 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     for target in &mut verification_targets {
         target.verify(&outpath)?;
     }
+    println!("");
 
-    Ok(summarize(verification_targets, &outpath, now)?)
+    summarize(verification_targets, &outpath, now)?;
+
+    if config.is_present("compress") {
+        compress_output_directory(&outpath)?;
+    }
+
+    Ok(())
 }
 
 fn summarize(verification_targets: Vec<VerificationTarget>,
@@ -126,6 +135,20 @@ fn ms_to_min_s_ms(ms_in: u128) -> String {
     let min = ms_in / 1000 / 60;
 
     format!("{} min {} s {} ms", min, s, ms).to_string()
+}
+
+fn compress_output_directory(dir: &PathBuf) -> io::Result<()> {
+    let mut file = dir.clone();
+    file.set_extension("tar.gz");
+
+    let tar_gz = fs::File::create(file)?;
+    let enc = GzEncoder::new(tar_gz, Compression::best());
+    let mut tar = tar::Builder::new(enc);
+    tar.append_dir_all(dir.components().last().unwrap(), dir)?;
+
+    fs::remove_dir_all(dir)?;
+
+    Ok(())
 }
 
 #[derive(Clone, Debug)]

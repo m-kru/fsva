@@ -43,11 +43,6 @@ fn main() {
         )
         .get_matches();
 
-    if config.is_present("compress") {
-        println!("Compression of the output directory is not yet supported.");
-        process::exit(1);
-    }
-
     if config.value_of("numprocesses").unwrap().parse::<u32>().unwrap() > 1 {
         println!("Parallel verification is not yet supported.");
         process::exit(1);
