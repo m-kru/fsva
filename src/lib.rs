@@ -237,6 +237,15 @@ impl VerificationTarget {
 
         self.command_arguments.push(self.target_name.clone());
         self.command_arguments.push(self.core_name.clone());
+
+        // Add path for pre analyzed libraries for GHDL.
+        // Right now it is hardcoded to the default GHDL installation path.
+        // If there is a need correct path will be detected automatically.
+        if self.eda_tool == "ghdl" {
+            self.command_arguments.push("--analyze_options".to_string());
+            //self.command_arguments.push("\"\\-P/usr/local/lib/ghdl/vendors\"".to_string());
+            self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors".to_string());
+        }
     }
 
     fn verify(&mut self, outpath: &PathBuf) -> io::Result<()> {
