@@ -40,11 +40,7 @@ pub fn run(config: ArgMatches) -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(&outpath)?;
 
     for target in &mut verification_targets {
-        target.prepare_for_verification(&outpath);
-    }
-
-    for target in &mut verification_targets {
-        target.verify()?;
+        target.verify(&outpath)?;
     }
 
     Ok(summarize(verification_targets, &outpath, now)?)
@@ -220,7 +216,9 @@ impl VerificationTarget {
         self.command_arguments.push(self.core_name.clone());
     }
 
-    fn verify(&mut self) -> io::Result<()> {
+    fn verify(&mut self, outpath: &PathBuf) -> io::Result<()> {
+        self.prepare_for_verification(&outpath);
+
         println!("Verifying core: {}, target: {}", self.core_name, self.target_name);
         let output = process::Command::new(self.command.clone())
             .args(self.command_arguments.clone())
