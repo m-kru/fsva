@@ -2,10 +2,10 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-entity gbt_pattern_generator_tb is
+entity gbt_pattern_generator_1_tb is
 end entity;
 
-architecture tb_arch of gbt_pattern_generator_tb is
+architecture tb_arch of gbt_pattern_generator_1_tb is
 
     constant CLK_PERIOD : time := 10 ns;
     signal clk   : std_logic := '0';

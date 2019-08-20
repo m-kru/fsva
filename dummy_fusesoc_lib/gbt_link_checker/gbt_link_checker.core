@@ -34,7 +34,7 @@ targets:
 
     generator_1_tb:
         default_tool: ghdl
-        toplevel: gbt_pattern_generator_tb
+        toplevel: gbt_pattern_generator_1_tb
         filesets:
             - rtl
             - tb_1_gen
