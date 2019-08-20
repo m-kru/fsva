@@ -244,7 +244,7 @@ impl VerificationTarget {
         if self.eda_tool == "ghdl" {
             self.command_arguments.push("--analyze_options".to_string());
             //self.command_arguments.push("\"\\-P/usr/local/lib/ghdl/vendors\"".to_string());
-            self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors".to_string());
+            self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules".to_string());
         }
     }
 

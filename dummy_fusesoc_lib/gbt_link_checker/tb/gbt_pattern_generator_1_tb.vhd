@@ -1,6 +1,9 @@
 library ieee;
-  use ieee.std_logic_1164.all;
-  use ieee.numeric_std.all;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library uvvm_util;
+context uvvm_util.uvvm_util_context;
 
 entity gbt_pattern_generator_1_tb is
 end entity;
@@ -37,11 +40,11 @@ begin
         wait for  CLK_PERIOD;
         rst_n <= '0';
  
-        report "this is a serious message" severity warning;
+        log("Hello world from UVVM util library!");
 
         wait for 4 * CLK_PERIOD;
 
-        assert 1 = 2 report "Error" severity failure;
+        check_value(1, 2, FAILURE, "Result differs from expected value.");
 
         std.env.finish;
 

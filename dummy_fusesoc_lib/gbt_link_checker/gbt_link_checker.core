@@ -19,7 +19,7 @@ filesets:
 
     tb_1_gen:
         files:
-            - tb/gbt_pattern_generator_tb.vhd
+            - tb/gbt_pattern_generator_1_tb.vhd
         file_type: vhdlSource-2008
 
     tb_2_gen:
