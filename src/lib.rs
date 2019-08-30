@@ -67,6 +67,7 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
     let mut summary_file = fs::File::create(outpath.clone().join("summary"))?;
 
     let mut all_passed = true;
+    let mut num_errors = 0;
     let mut num_warnings = 0;
 
     for target in verification_targets {
@@ -79,6 +80,14 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
             print_summary(&mut summary_file,
                          &format!("FAILED: core: {}, target: {}\n",
                                   target.core_name, target.target_name))?;
+        }
+
+        if target.number_of_errors > 0 {
+            num_errors += target.number_of_errors;
+
+            print_summary(&mut summary_file,
+                         &format!("ERRORS ({}): core: {}, target: {}\n",
+                                  target.number_of_errors, target.core_name, target.target_name))?;
         }
 
         if target.number_of_warnings > 0 {
@@ -103,11 +112,13 @@ fn summarize(verification_targets: Vec<VerificationTarget>,
   TARGETS:  {}
   PASSED:   {} ({:.2}%)
   FAILED:   {} ({:.2}%)
+  ERRORS:   {}
   WARNINGS: {}\n",
         ms_to_min_s_ms(time_measure.elapsed().as_millis()),
         num_targets,
         num_passed, num_passed as f32 / num_targets as f32 * 100.0,
         num_failed, num_failed as f32 / num_targets as f32 * 100.0,
+        num_errors,
         num_warnings);
 
     print_summary(&mut summary_file, &summary)?;
@@ -164,6 +175,7 @@ struct VerificationTarget {
     command_arguments: Vec<String>,
     // Attributes for verification results.
     passed: bool,
+    number_of_errors: usize,
     number_of_warnings: usize,
     // TODO: add attribute with time for verification
 }
@@ -182,6 +194,7 @@ impl Default for VerificationTarget {
                                     String::from("run"),
                                     String::from("--target")],
             passed: false,
+            number_of_errors: 0,
             number_of_warnings: 0,
         }
     }
@@ -261,11 +274,16 @@ impl VerificationTarget {
         }
 
         let mut file = fs::File::create(self.output_file.clone())?;
-        file.write_all(b"***** STANDARD ERROR *****\n\n")?;
+        file.write_all(b"***** STDERR *****\n\n")?;
         file.write_all(&output.stderr)?;
 
-        file.write_all(b"\n***** STANDARD OUTPUT *****\n\n")?;
+        file.write_all(b"\n***** STDOUT *****\n\n")?;
         file.write_all(&output.stdout)?;
+
+        self.number_of_errors = std::str::from_utf8(&output.stdout).unwrap()
+                                    .to_lowercase()
+                                    .matches("error")
+                                    .count();
 
         self.number_of_warnings = std::str::from_utf8(&output.stdout).unwrap()
                                     .to_lowercase()
