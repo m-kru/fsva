@@ -1,0 +1,26 @@
+CAPI=2:
+
+name: ::div_by_3
+
+filesets:
+    rtl:
+        files:
+            - div_by_3.vhd
+        file_type: vhdlSource-2008
+
+    tb:
+        files:
+            - div_by_3_tb.vhd
+        file_type: vhdlSource-2008
+
+targets:
+    default:
+        filesets:
+            - rtl
+
+    div_by_3_tb:
+        default_tool: ghdl
+        toplevel: div_by_3_tb
+        filesets:
+            - rtl
+            - tb
