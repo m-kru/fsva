@@ -243,10 +243,11 @@ impl VerificationTarget {
         Ok(ver_targets)
     }
 
-    fn prepare_for_verification(&mut self, outpath: &PathBuf) {
-        let file_name = self.core_name.trim_start_matches(':')
-                            .replace(":", "-") + "_" + &self.target_name;
-        self.output_file = outpath.join(file_name);
+    fn prepare_for_verification(&mut self, outpath: &PathBuf) -> io::Result<()> {
+        let core_name = self.core_name.trim_start_matches(':')
+                            .replace(":", "-");
+        fs::create_dir_all(outpath.join(&core_name))?;
+        self.output_file = outpath.join(core_name).join(&self.target_name);
 
         self.command_arguments.push(self.target_name.clone());
         self.command_arguments.push(self.core_name.clone());
@@ -256,13 +257,14 @@ impl VerificationTarget {
         // If there is a need correct path will be detected automatically.
         if self.eda_tool == "ghdl" {
             self.command_arguments.push("--analyze_options".to_string());
-            //self.command_arguments.push("\"\\-P/usr/local/lib/ghdl/vendors\"".to_string());
             self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules".to_string());
         }
+
+        Ok(())
     }
 
     fn verify(&mut self, outpath: &PathBuf) -> io::Result<()> {
-        self.prepare_for_verification(&outpath);
+        self.prepare_for_verification(&outpath)?;
 
         println!("Verifying core: {}, target: {}", self.core_name, self.target_name);
         let output = process::Command::new(self.command.clone())
