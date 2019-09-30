@@ -36,7 +36,7 @@ begin
     end loop;
 
     dividend_cover_item.SetMessage("Coverage for dividend input");
-    dividend_cover_item.WriteBin;
+    dividend_cover_item.WriteBin(WritePrefix => "OSVVM");
     report("End of simulation. All tests passed.");
     std.env.finish;
   end process;
