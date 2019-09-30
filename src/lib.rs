@@ -257,7 +257,11 @@ impl VerificationTarget {
         // If there is a need correct path will be detected automatically.
         if self.eda_tool == "ghdl" {
             self.command_arguments.push("--analyze_options".to_string());
-            self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules".to_string());
+            self.command_arguments.push("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl".to_string());
+
+            let ghdl_psl_report_file = self.output_file.clone().to_str().unwrap().to_owned() + "_ghdl_psl_report.json";
+            self.command_arguments.push("--run_options".to_string());
+            self.command_arguments.push(format!("{}{}", "\\--psl-report=", ghdl_psl_report_file));
         }
 
         Ok(())

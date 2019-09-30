@@ -1,0 +1,21 @@
+CAPI=2:
+
+name: ::psl
+
+filesets:
+    tb_0:
+        files:
+            - tb/psl.vhd
+        file_type: vhdlSource-2008
+
+targets:
+    tb_0:
+        default_tool: ghdl
+# This GHDL tool options for PSL are not needed as fsva adds them automatically.
+#        tools:
+#            ghdl:
+#                analyze_options: [-fpsl]
+#                run_options: [--psl-report=psl_report.json]
+        toplevel: psl
+        filesets:
+            - tb_0
