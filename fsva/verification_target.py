@@ -46,6 +46,11 @@ class VerificationTarget:
             self.command_arguments.append('--run_options')
             self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --vcd=" + ghdl_vcd_file)
 
+    def _prepare_for_verification(self, outpath):
+        self._prepare_output_directory(outpath)
+        self._prepare_analyze_options()
+        self._prepare_run_options()
+
     def _verify(self):
         print("Verifying core: " + self.core_name + ", target: " + self.target_name)
 
@@ -60,9 +65,7 @@ class VerificationTarget:
         return output
 
     def verify_to_file(self, outpath):
-        self._prepare_output_directory(outpath)
-        self._prepare_analyze_options()
-        self._prepare_run_options()
+        self._prepare_for_verification(outpath)
 
         output = self._verify()
 
@@ -73,8 +76,8 @@ class VerificationTarget:
             f.write("\n***** STDOUT *****\n\n")
             f.write(output.stdout)
 
-    def verify_to_console(self):
-        self._prepare_analyze_options()
+    def verify_to_console(self, outpath):
+        self._prepare_for_verification(outpath)
 
         output = self._verify()
 

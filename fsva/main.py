@@ -46,7 +46,7 @@ def check_workpath_exists(path):
         exit(1)
 
 
-def verify_single_core(verification_targets, core, target):
+def verify_single_core(verification_targets, core, target, outpath):
     ver_targets = []
     for t in verification_targets:
         if t.core_name == core:
@@ -57,7 +57,7 @@ def verify_single_core(verification_targets, core, target):
         print("No verification targets found for given core: " + core + ", target: " + target)
 
     for t in ver_targets:
-        t.verify_to_console()
+        t.verify_to_console(outpath)
 
 
 def print_summary(file, msg):
@@ -176,12 +176,14 @@ if __name__ == '__main__':
         print("No verification targets found in .core files")
         exit(1)
 
+    outpath = workpath + '/' + cmd_line_args.outdir + '/'
+
     if cmd_line_args.core:
-        verify_single_core(verification_targets, cmd_line_args.core, cmd_line_args.target)
+        outpath += 'tmp'
+        verify_single_core(verification_targets, cmd_line_args.core, cmd_line_args.target, outpath)
         exit(0)
 
-    outpath = workpath + '/' + cmd_line_args.outdir + '/' + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    os.makedirs(outpath)
+    outpath += datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     for target in verification_targets:
         target.verify_to_file(outpath)
