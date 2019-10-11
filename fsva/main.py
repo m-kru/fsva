@@ -12,21 +12,21 @@ from fsva import verification_target
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser(
         prog="FuseSoc Verification Automation",
-        description="Tool for automating verification process for HDL projects using FuseSoc build tool"
+        description="Tool for automating verification process for HDL projects using FuseSoc build tool."
     )
 
     # Positional arguments for single core runs and console output
-    parser.add_argument("core", nargs='?', help="Core to verify - console output")
-    parser.add_argument("target", nargs='?', help="Verification target to run - console output")
+    parser.add_argument("core", nargs='?', help="Core to verify - console output.")
+    parser.add_argument("target", nargs='?', help="Verification target to run - console output.")
 
     parser.add_argument('-w', '--workpath', default='.',
-                        help="Work path. Path to recursively look for FuseSoc .core files")
+                        help="Work path. Path to recursively look for FuseSoc .core files.")
     parser.add_argument('-o', '--outdir', default='_fsva',
-                        help="Output directory name. This directory is created in workpath")
+                        help="Output directory name. This directory is created in workpath.")
     parser.add_argument('-c', '--compress', action='store_true',
-                        help="Automatically compress output directory if all tests pass")
+                        help="Automatically compress output directory if all tests pass.")
     parser.add_argument('-n', '--numprocesses', default=1,
-                        help="Number of processes allowed to be spawn in parallel.")
+                        help="Number of processes allowed to be spawn in parallel")
 
     return parser.parse_args()
 
