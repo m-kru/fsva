@@ -9,7 +9,7 @@ class VerificationTarget:
         self.core_name = None
         self.target_name = None
         self.eda_tool = None
-        self.output_file = None,
+        self.outpath = None,
         # Attributes for verification command.
         self.command = 'fusesoc'
         self.command_arguments = ['--cores-root', '.', 'run', '--target']
@@ -19,17 +19,16 @@ class VerificationTarget:
         self.number_of_warnings = 0
         # TODO: add attribute with time for verification
 
-    def _prepare_for_verification(self, outpath):
-        self.core_name = self.core_name.strip(':').replace(':', '-')
+    def _prepare_output_directory(self, outpath):
+        core_name = self.core_name.strip(':').replace(':', '-')
 
-        outpath = outpath + '/' + self.core_name + '/' + self.target_name + '/'
+        self.outpath = outpath + '/' + core_name + '/' + self.target_name + '/'
         try:
-            os.makedirs(outpath)
+            os.makedirs(self.outpath)
         except FileExistsError:
             pass
 
-        self.output_file = outpath + 'output.txt'
-
+    def _prepare_analyze_options(self):
         self.command_arguments.append(self.target_name)
         self.command_arguments.append(self.core_name)
 
@@ -40,14 +39,14 @@ class VerificationTarget:
             self.command_arguments.append('--analyze_options')
             self.command_arguments.append("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl")
 
-            ghdl_psl_report_file = outpath + "ghdl_psl_report.json"
-            ghdl_vcd_file = outpath + "ghdl.vcd"
+    def _prepare_run_options(self):
+        if self.eda_tool == "ghdl":
+            ghdl_psl_report_file = self.outpath + "ghdl_psl_report.json"
+            ghdl_vcd_file = self.outpath + "ghdl.vcd"
             self.command_arguments.append('--run_options')
             self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --vcd=" + ghdl_vcd_file)
 
-    def verify(self, outpath):
-        self._prepare_for_verification(outpath)
-
+    def _verify(self):
         print("Verifying core: " + self.core_name + ", target: " + self.target_name)
 
         output = subprocess.run([self.command] + self.command_arguments, capture_output=True, encoding='utf-8')
@@ -55,15 +54,46 @@ class VerificationTarget:
         if output.returncode == 0:
             self.passed = True
 
-        with open(self.output_file, 'w') as f:
+        self.number_of_errors = output.stdout.lower().count('error')
+        self.number_of_warnings = output.stdout.lower().count('warn')
+
+        return output
+
+    def verify_to_file(self, outpath):
+        self._prepare_output_directory(outpath)
+        self._prepare_analyze_options()
+        self._prepare_run_options()
+
+        output = self._verify()
+
+        with open(self.outpath + 'output.txt', 'w') as f:
             f.write("***** STDERR *****\n\n")
             f.write(output.stderr)
 
             f.write("\n***** STDOUT *****\n\n")
             f.write(output.stdout)
 
-        self.number_of_errors = output.stdout.lower().count('error')
-        self.number_of_warnings = output.stdout.lower().count('warn')
+    def verify_to_console(self):
+        self._prepare_analyze_options()
+
+        output = self._verify()
+
+        print("\n***** STDERR *****")
+        print(output.stderr)
+
+        print("***** STDOUT *****")
+        print(output.stdout)
+
+        print("core: " + self.core_name + ", target: " + self.target_name)
+
+        if self.passed:
+            print("PASSED")
+        else:
+            print("FAILED")
+
+        print("ERRORS:    " + str(self.number_of_errors))
+        print("WARNINGS:  " + str(self.number_of_warnings))
+        print('\n')
 
 
 def from_file(file):

@@ -15,6 +15,10 @@ def parse_command_line_arguments():
         description="Tool for automating verification process for HDL projects using FuseSoc build tool"
     )
 
+    # Positional arguments for single core runs and console output
+    parser.add_argument("core", nargs='?', help="Core to verify - console output")
+    parser.add_argument("target", nargs='?', help="Verification target to run - console output")
+
     parser.add_argument('-w', '--workpath', default='.',
                         help="Work path. Path to recursively look for FuseSoc .core files")
     parser.add_argument('-o', '--outdir', default='_fsva',
@@ -42,6 +46,20 @@ def check_workpath_exists(path):
         exit(1)
 
 
+def verify_single_core(verification_targets, core, target):
+    ver_targets = []
+    for t in verification_targets:
+        if t.core_name == core:
+            if target is None or t.target_name == target:
+                ver_targets.append(t)
+
+    if not ver_targets:
+        print("No verification targets found for given core: " + core + ", target: " + target)
+
+    for t in ver_targets:
+        t.verify_to_console()
+
+
 def print_summary(file, msg):
     print(msg, end='')
     file.write(msg)
@@ -52,6 +70,8 @@ def summarize(verification_targets, outpath, start_time):
     num_passed = sum(1 for x in verification_targets if x.passed)
     num_failed = num_targets - num_passed
     all_passed = True
+
+    print()
 
     with open(outpath + '/summary', 'w') as f:
         num_errors = 0
@@ -75,7 +95,7 @@ def summarize(verification_targets, outpath, start_time):
                 print_summary(f, "WARNINGS (" + str(target.number_of_warnings) + "): core: " + target.core_name + ", target: " + target.target_name + "}\n")
 
             if not target.passed or target.number_of_warnings > 0:
-                print_summary(f, "For more details check file:" + target.output_file + "\n")
+                print_summary(f, "For more details check directory:" + target.outpath + "\n")
 
             print_summary(f, "\n")
 
@@ -152,11 +172,15 @@ if __name__ == '__main__':
     for file in core_files:
         verification_targets += verification_target.from_file(file)
 
+    if cmd_line_args.core:
+        verify_single_core(verification_targets, cmd_line_args.core, cmd_line_args.target)
+        exit(0)
+
     outpath = workpath + '/' + cmd_line_args.outdir + '/' + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     os.makedirs(outpath)
 
     for target in verification_targets:
-        target.verify(outpath)
+        target.verify_to_file(outpath)
 
     summarize(verification_targets, outpath, start_time)
 
