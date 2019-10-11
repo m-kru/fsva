@@ -22,12 +22,13 @@ class VerificationTarget:
     def _prepare_for_verification(self, outpath):
         self.core_name = self.core_name.strip(':').replace(':', '-')
 
+        outpath = outpath + '/' + self.core_name + '/' + self.target_name + '/'
         try:
-            os.mkdir(outpath + '/' + self.core_name)
+            os.makedirs(outpath)
         except FileExistsError:
             pass
 
-        self.output_file = outpath + '/' + self.core_name + '/' + self.target_name
+        self.output_file = outpath + 'output.txt'
 
         self.command_arguments.append(self.target_name)
         self.command_arguments.append(self.core_name)
@@ -39,8 +40,8 @@ class VerificationTarget:
             self.command_arguments.append('--analyze_options')
             self.command_arguments.append("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl")
 
-            ghdl_psl_report_file = self.output_file + "_ghdl_psl_report.json"
-            ghdl_vcd_file = self.output_file + ".vcd"
+            ghdl_psl_report_file = outpath + "ghdl_psl_report.json"
+            ghdl_vcd_file = outpath + "ghdl.vcd"
             self.command_arguments.append('--run_options')
             self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --vcd=" + ghdl_vcd_file)
 
