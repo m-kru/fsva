@@ -172,6 +172,10 @@ if __name__ == '__main__':
     for file in core_files:
         verification_targets += verification_target.from_file(file)
 
+    if not verification_targets:
+        print("No verification targets found in .core files")
+        exit(1)
+
     if cmd_line_args.core:
         verify_single_core(verification_targets, cmd_line_args.core, cmd_line_args.target)
         exit(0)
