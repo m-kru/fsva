@@ -40,8 +40,9 @@ class VerificationTarget:
             self.command_arguments.append("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl")
 
             ghdl_psl_report_file = self.output_file + "_ghdl_psl_report.json"
+            ghdl_vcd_file = self.output_file + ".vcd"
             self.command_arguments.append('--run_options')
-            self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file)
+            self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --vcd=" + ghdl_vcd_file)
 
     def verify(self, outpath):
         self._prepare_for_verification(outpath)
