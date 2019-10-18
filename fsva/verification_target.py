@@ -42,9 +42,9 @@ class VerificationTarget:
     def _prepare_run_options(self):
         if self.eda_tool == "ghdl":
             ghdl_psl_report_file = self.outpath + "ghdl_psl_report.json"
-            ghdl_vcd_file = self.outpath + "ghdl.vcd"
+            ghdl_vcd_file = self.outpath + "ghdl.ghw"
             self.command_arguments.append('--run_options')
-            self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --vcd=" + ghdl_vcd_file)
+            self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --wave=" + ghdl_vcd_file)
 
     def _prepare_for_verification(self, outpath):
         self._prepare_output_directory(outpath)
