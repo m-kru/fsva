@@ -31,5 +31,9 @@ If you want (you probably want) install output target in visible PATH.
 ### Example
 <p align="center"><img src="/img/demo.gif?raw=true"/></p>
 
+## Installation
+Latest stable version of fsva can be installed from PyPI:
+`pip install --user fsva`
+
 ## Note!
 If you use it with UVVM you need to fix status that is returned when UVVM test bench fails: [Integrating UVVM with Continuous Integration - problem with simulators exit status](https://github.com/UVVM/UVVM/issues/82).
