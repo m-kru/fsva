@@ -9,7 +9,7 @@ import shutil
 from fsva import verification_target
 
 
-VERSION = '0.0.0'
+VERSION = '0.0.1'
 
 
 def parse_command_line_arguments():

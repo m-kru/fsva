@@ -24,16 +24,20 @@ For instance, for UVVM it will be `tb_uvvm_` / `_uvvm_tb`, respectively for OSVV
 
 If FuseSoc supports formal verification targets in the future, they will be fetched based on `fv_` prefix or `_fv` suffix.
 
+## Installation
+Latest stable version of fsva can be installed from [PyPI](https://pypi.org/project/fsva/):
+`pip install --user fsva`.
+
 ## Usage
-Clone the repository and build with `cargo build --release`.
-If you want (you probably want) install output target in visible PATH.
 
 ### Example
 <p align="center"><img src="/img/demo.gif?raw=true"/></p>
 
-## Installation
-Latest stable version of fsva can be installed from PyPI:
-`pip install --user fsva`
+You can also run all testbench targets for single core:
+`fsva core_name`
+or run specific verification target for specific core
+`fsva core_name target_name`.
+When verifying single core or target, the output is printed on the console.
 
 ## Note!
 If you use it with UVVM you need to fix status that is returned when UVVM test bench fails: [Integrating UVVM with Continuous Integration - problem with simulators exit status](https://github.com/UVVM/UVVM/issues/82).
