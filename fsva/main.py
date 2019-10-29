@@ -6,8 +6,10 @@ from datetime import datetime
 import zipfile
 import shutil
 
-from . import version
-from . import verification_target
+from fsva import verification_target
+
+
+VERSION = '0.0.0'
 
 
 def parse_command_line_arguments():
@@ -17,7 +19,7 @@ def parse_command_line_arguments():
     )
 
     # Positional arguments for single core runs and console output
-    parser.add_argument("--version", help="Display fsva version.", action='version', version=version.version)
+    parser.add_argument("--version", help="Display fsva version.", action='version', version=VERSION)
     parser.add_argument("core", nargs='?', help="Core to verify - console output.")
     parser.add_argument("target", nargs='?', help="Verification target to run - console output.")
 
@@ -147,10 +149,6 @@ def compress_output_directory(outpath):
     shutil.rmtree(dirs_names[-1])
 
 
-if __name__ == '__main__':
-    main()
-
-
 def main():
     cmd_line_args = parse_command_line_arguments()
 
@@ -198,3 +196,7 @@ def main():
 
     if cmd_line_args.compress:
         compress_output_directory(outpath)
+
+
+if __name__ == '__main__':
+    main()
