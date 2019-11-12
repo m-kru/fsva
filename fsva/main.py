@@ -99,7 +99,7 @@ def summarize(verification_targets, outpath, start_time):
                 print_summary(f, "WARNINGS (" + str(target.number_of_warnings) + "): core: " + target.core_name + ", target: " + target.target_name + "}\n")
 
             if not target.passed or target.number_of_warnings > 0:
-                print_summary(f, "For more details check directory:" + target.outpath + "\n")
+                print_summary(f, "For more details check directory: " + target.outpath + "\n")
 
             print_summary(f, "\n")
 
