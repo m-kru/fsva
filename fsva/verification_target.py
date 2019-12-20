@@ -112,6 +112,9 @@ def from_file(file):
         except yaml.YAMLError as exc:
             print(exc)
 
+    if 'targets' not in yaml_dict:
+        return []
+
     verification_targets = []
     for target in yaml_dict['targets']:
         if target.startswith('tb_') or target.endswith('_tb'):
