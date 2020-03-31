@@ -90,9 +90,9 @@ class VerificationTarget:
         print("core: " + self.core_name + ", target: " + self.target_name)
 
         if self.passed:
-            print("PASSED")
+            print("\033[92m" + "PASSED" + "\033[0m")
         else:
-            print("FAILED")
+            print("\033[91m" + "FAILED" + "\033[0m")
 
         print("ERRORS:    " + str(self.number_of_errors))
         print("WARNINGS:  " + str(self.number_of_warnings))
