@@ -70,10 +70,15 @@ class VerificationTarget:
         output = self._verify()
 
         with open(self.outpath + 'output.txt', 'w') as f:
-            f.write("***** STDERR *****\n\n")
+            f.write("************************************************************\n")
+            f.write("*****                      STDERR                      *****\n")
+            f.write("************************************************************\n\n")
             f.write(output.stderr)
 
-            f.write("\n***** STDOUT *****\n\n")
+            f.write("\n\n")
+            f.write("************************************************************\n")
+            f.write("*****                      STDOUT                      *****\n")
+            f.write("************************************************************\n\n")
             f.write(output.stdout)
 
     def verify_to_console(self, outpath):
@@ -81,10 +86,16 @@ class VerificationTarget:
 
         output = self._verify()
 
-        print("\n***** STDERR *****")
+        print("")
+        print("************************************************************")
+        print("*****                      STDERR                      *****")
+        print("************************************************************\n")
         print(output.stderr)
 
-        print("***** STDOUT *****")
+        print("")
+        print("************************************************************")
+        print("*****                      STDOUT                      *****")
+        print("************************************************************\n")
         print(output.stdout)
 
         print("core: " + self.core_name + ", target: " + self.target_name)
