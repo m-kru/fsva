@@ -107,7 +107,7 @@ class VerificationTarget:
 
         print("ERRORS:    " + str(self.number_of_errors))
         print("WARNINGS:  " + str(self.number_of_warnings))
-        print('\n')
+        print("")
 
 
 def from_file(file):
