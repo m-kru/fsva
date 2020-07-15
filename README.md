@@ -60,7 +60,7 @@ Alternatively, you can clone this repository and run `python setup.py install --
 ### Verify project
 Execute `fsva` in project root directory to run all verification targets.
 
-<p align="center"><img src="/img/demo.gif?raw=true"/></p>
+<p align="center"><img src="/img/project.gif?raw=true"/></p>
 
 ### Verify single core
 You can also run all verification targets for single core:
@@ -68,7 +68,7 @@ You can also run all verification targets for single core:
 or run specific verification target for specific core
 `fsva core_name target_name`.
 When verifying single core or target, the output is printed on the console.
-Extra files, such as waveform, PSL reports etc. are placed under `_fsva/tmp/{core}/{target}/` path. 
+Extra files, such as waveform, PSL reports etc. are placed under `_fsva/tmp/{core}/{target}/` path.
 
 <p align="center"><img src="/img/single_target.gif?raw=true"/></p>
 
