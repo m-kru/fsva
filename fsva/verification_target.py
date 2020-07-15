@@ -12,7 +12,7 @@ class VerificationTarget:
         self.outpath = None,
         # Attributes for verification command.
         self.command = 'fusesoc'
-        self.command_arguments = ['--cores-root', '.', 'run', '--target']
+        self.command_arguments = ['--cores-root', '.', 'run', '--no-export', '--target']
         # Attributes for verification results.
         self.passed = False
         self.number_of_errors = 0

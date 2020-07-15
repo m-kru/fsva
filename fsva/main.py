@@ -5,6 +5,8 @@ import pathlib
 from datetime import datetime
 import zipfile
 import shutil
+import concurrent.futures
+import multiprocessing
 
 from fsva import verification_target
 
@@ -14,8 +16,8 @@ VERSION = '0.0.4'
 
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser(
-        prog="FuseSoc Verification Automation",
-        description="Tool for automating verification process for HDL projects using FuseSoc build tool."
+        prog="fsva",
+        description="FuseSoc Verification Automation (fsva) - tool for automating verification process for HDL projects using FuseSoc build tool."
     )
 
     # Positional arguments for single core runs and console output
@@ -29,8 +31,8 @@ def parse_command_line_arguments():
                         help="Output directory name. This directory is created in workpath.")
     parser.add_argument('-c', '--compress', action='store_true',
                         help="Automatically compress output directory if all tests pass.")
-    parser.add_argument('-n', '--numprocesses', default=1,
-                        help="Number of processes allowed to be spawn in parallel")
+    parser.add_argument('-n', '--numprocesses', type=int, default=multiprocessing.cpu_count(),
+                        help="Number of processes allowed to be spawn in parallel. By default value returned from multiprocessing.cpu_count() is used.")
 
     return parser.parse_args()
 
@@ -152,10 +154,6 @@ def compress_output_directory(outpath):
 def main():
     cmd_line_args = parse_command_line_arguments()
 
-    if int(cmd_line_args.numprocesses) > 1:
-        print("Parallel verification is not yet supported")
-        exit(1)
-
     check_fusesoc_installed()
 
     check_workpath_exists(cmd_line_args.workpath)
@@ -189,8 +187,13 @@ def main():
 
     outpath += datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    for target in verification_targets:
-        target.verify_to_file(outpath)
+    if int(cmd_line_args.numprocesses) < 1:
+        workers = 1
+    else:
+        workers = int(cmd_line_args.numprocesses)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+        executor.map(lambda t: t.verify_to_file(outpath), verification_targets)
 
     summarize(verification_targets, outpath, start_time)
 
