@@ -192,6 +192,8 @@ def main():
     else:
         workers = int(cmd_line_args.numprocesses)
 
+    print(f"Running {len(verification_targets)} verification targets with {workers} workers.\n")
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
         executor.map(lambda t: t.verify_to_file(outpath), verification_targets)
 
