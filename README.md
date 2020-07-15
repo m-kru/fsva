@@ -6,9 +6,10 @@ FuseSoc Verification Automation (fsva) is a tool that aims to automate the verif
 
 fsva in no way duplicates or replaces functionalities provided by the FuseSoc.
 Colloquially speaking, fsva is a wrapper for FuseSoc, automating the verification process.
+It simply detects and runs verification targets, and parses verification results.
 
 ### Why?
-The major goal is to easy integrate project/libraries described in FuseSoc into Continuous Integration workflow.
+The major goal is to easily integrate project/libraries described in FuseSoc into Continuous Integration workflow.
 FuseSoc is more than good for building and running single targets, however if you want to run multiple verificaiton targets it keeps rebuilding verification frameworks.
 This particular operation is redundant and time consuming.
 fsva assumes that verification frameworks (such as [UVVM](https://github.com/UVVM/UVVM) or [OSVVM](https://github.com/OSVVM/OSVVM)) are already pre-compiled (pre-analyzed) for simulation engines.
