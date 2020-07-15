@@ -54,6 +54,7 @@ If FuseSoc supports formal verification targets in the future, they will be fetc
 Latest stable version of fsva can be installed from [PyPI](https://pypi.org/project/fsva/):
 `pip install --user fsva`.
 
+Alternatively, you can clone this repository and run `python setup.py install --user`.
 ## Usage
 
 ### Verify project
