@@ -19,7 +19,7 @@ What is more, fsva extends FuseSoc by parsing verification results.
 fsva scans recursively for `.core` files and fetches all targets starting with `tb_` or ending with `_tb`.
 Then it runs these targets calling FuseSoc run command and captures stdout and stderr.
 By default verification targets are run in parallel.
-The default number of concurrent processes eqauals `multiprocessing.cpu_count()`.
+The default number of concurrent processes equals `multiprocessing.cpu_count()`.
 All verification results, as well as verification summary, are saved as separate files in a directory, which name reflects the UTC time of a verification process startup.
 Under the UTC time directory, the cores directories are located.
 Each core directory contains directories with results for particular verification targets.
