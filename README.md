@@ -17,6 +17,8 @@ What is more, fsva extends FuseSoc by parsing verification results.
 ## How it works
 fsva scans recursively for `.core` files and fetches all targets starting with `tb_` or ending with `_tb`.
 Then it runs these targets calling FuseSoc run command and captures stdout and stderr.
+By default verification targets are run in parallel.
+The default number of concurrent processes eqauals `multiprocessing.cpu_count()`.
 All verification results, as well as verification summary, are saved as separate files in a directory, which name reflects the UTC time of a verification process startup.
 
 If any extra parsing of the verification results is needed (for example in case of metric driven verification) in the future, it will be based on prefix or suffix indicating verification framework/infrastructure.
@@ -40,4 +42,4 @@ or run specific verification target for specific core
 When verifying single core or target, the output is printed on the console.
 
 ## Note!
-If you use it with UVVM you need to fix status that is returned when UVVM test bench fails: [Integrating UVVM with Continuous Integration - problem with simulators exit status](https://github.com/UVVM/UVVM/issues/82).
+If you use it with UVVM you may need to fix status that is returned when UVVM test bench fails: [Integrating UVVM with Continuous Integration - problem with simulators exit status](https://github.com/UVVM/UVVM/issues/82).
