@@ -21,6 +21,29 @@ Then it runs these targets calling FuseSoc run command and captures stdout and s
 By default verification targets are run in parallel.
 The default number of concurrent processes eqauals `multiprocessing.cpu_count()`.
 All verification results, as well as verification summary, are saved as separate files in a directory, which name reflects the UTC time of a verification process startup.
+Under the UTC time directory, the cores directories are located.
+Each core directory contains directories with results for particular verification targets.
+Example `_fsva` output directory structure:
+```
+_fsva/
+└── 2020-07-15_16-31-47
+    ├── div_by_3
+    │   └── div_by_3_tb
+    │       └── output.txt
+    ├── gbt_link_checker
+    │   ├── checker_tb
+    │   │   └── output.txt
+    │   ├── generator_1_tb
+    │   │   └── output.txt
+    │   └── generator_2_tb
+    │       └── output.txt
+    ├── psl
+    │   └── tb_0
+    │       ├── ghdl.ghw
+    │       ├── ghdl_psl_report.json
+    │       └── output.txt
+    └── summary
+```
 
 If any extra parsing of the verification results is needed (for example in case of metric driven verification) in the future, it will be based on prefix or suffix indicating verification framework/infrastructure.
 For instance, for UVVM it will be `tb_uvvm_` / `_uvvm_tb`, respectively for OSVVM it will be `tb_osvvm_` / `_osvvm_tb`.
@@ -33,10 +56,13 @@ Latest stable version of fsva can be installed from [PyPI](https://pypi.org/proj
 
 ## Usage
 
-### Example
+### Verify project
+Execute `fsva` in project root directory to run all verification targets.
+
 <p align="center"><img src="/img/demo.gif?raw=true"/></p>
 
-You can also run all testbench targets for single core:
+### Verify single core
+You can also run all verification targets for single core:
 `fsva core_name`
 or run specific verification target for specific core
 `fsva core_name target_name`.
