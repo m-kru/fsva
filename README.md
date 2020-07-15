@@ -68,6 +68,9 @@ You can also run all verification targets for single core:
 or run specific verification target for specific core
 `fsva core_name target_name`.
 When verifying single core or target, the output is printed on the console.
+Extra files, such as waveform, PSL reports etc. are placed under `_fsva/tmp/{core}/{target}/` path. 
+
+<p align="center"><img src="/img/single_target.gif?raw=true"/></p>
 
 ## Note!
 If you use it with UVVM you may need to fix status that is returned when UVVM test bench fails: [Integrating UVVM with Continuous Integration - problem with simulators exit status](https://github.com/UVVM/UVVM/issues/82).
