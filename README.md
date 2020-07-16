@@ -62,7 +62,7 @@ Execute `fsva` in project root directory to run all verification targets.
 
 <p align="center"><img src="/img/project.gif?raw=true"/></p>
 
-### Verify single core
+### Verify single core or target
 You can also run all verification targets for single core:
 `fsva core_name`
 or run specific verification target for specific core

@@ -67,8 +67,10 @@ def verify_single_core(verification_targets, core, target, outpath):
 
 
 def print_summary(file, msg):
-    print(msg, end='')
     file.write(msg)
+    msg = msg.replace("PASSED", "\033[92mPASSED\033[0m")
+    msg = msg.replace("FAILED", "\033[91mFAILED\033[0m")
+    print(msg, end='')
 
 
 def summarize(verification_targets, outpath, start_time):
