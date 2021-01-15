@@ -90,7 +90,7 @@ def summarize(verification_targets, outpath, start_time):
                 print_summary(f, "PASSED: core: " + target.core_name + ", target: " + target.target_name + "\n")
             else:
                 all_passed = False
-                print_summary(f, "FAILED: core: " + target.core_name + ", target: " + target.target_name + "\n")
+                print_summary(f, "FAILED: core: " + target.core_name + ", target: " + target.target_name + "\nRun with:\n" + "fsva " + target.core_name + " " + target.target_name + "\n")
 
             if target.number_of_errors > 0:
                 num_errors += target.number_of_errors
