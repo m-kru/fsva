@@ -16,7 +16,7 @@ fsva assumes that verification frameworks (such as [UVVM](https://github.com/UVV
 What is more, fsva extends FuseSoc by parsing verification results.
 
 ## How it works
-fsva scans recursively for `.core` files and fetches all targets starting with `tb_` or ending with `_tb`.
+fsva scans recursively for `.core` files and fetches all targets with name `tb` or name starting with `tb_` or ending with `_tb`.
 Then it runs these targets calling FuseSoc run command and captures stdout and stderr.
 By default verification targets are run in parallel.
 The default number of concurrent processes equals `multiprocessing.cpu_count()`.

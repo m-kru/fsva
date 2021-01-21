@@ -136,7 +136,7 @@ def from_file(file):
 
     verification_targets = []
     for target in yaml_dict["targets"]:
-        if target.startswith("tb_") or target.endswith("_tb"):
+        if target == "tb" or target.startswith("tb_") or target.endswith("_tb"):
             ver_target = VerificationTarget()
             ver_target.core_file = f.name
             ver_target.core_name = yaml_dict["name"]
