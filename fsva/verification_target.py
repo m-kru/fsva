@@ -9,10 +9,10 @@ class VerificationTarget:
         self.core_name = None
         self.target_name = None
         self.eda_tool = None
-        self.outpath = None,
+        self.outpath = (None,)
         # Attributes for verification command.
-        self.command = 'fusesoc'
-        self.command_arguments = ['--cores-root', '.', 'run', '--no-export', '--target']
+        self.command = "fusesoc"
+        self.command_arguments = ["--cores-root", ".", "run", "--no-export", "--target"]
         # Attributes for verification results.
         self.passed = False
         self.number_of_errors = 0
@@ -20,9 +20,9 @@ class VerificationTarget:
         # TODO: add attribute with time for verification
 
     def _prepare_output_directory(self, outpath):
-        core_name = self.core_name.strip(':').replace(':', '-')
+        core_name = self.core_name.strip(":").replace(":", "-")
 
-        self.outpath = outpath + '/' + core_name + '/' + self.target_name + '/'
+        self.outpath = outpath + "/" + core_name + "/" + self.target_name + "/"
         try:
             os.makedirs(self.outpath)
         except FileExistsError:
@@ -36,15 +36,19 @@ class VerificationTarget:
         #  Right now it is hardcoded to the default GHDL installation path.
         #  If there is a need correct path will be detected automatically.
         if self.eda_tool == "ghdl":
-            self.command_arguments.append('--analyze_options')
-            self.command_arguments.append("\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl")
+            self.command_arguments.append("--analyze_options")
+            self.command_arguments.append(
+                "\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl"
+            )
 
     def _prepare_run_options(self):
         if self.eda_tool == "ghdl":
             ghdl_psl_report_file = self.outpath + "ghdl_psl_report.json"
             ghdl_vcd_file = self.outpath + "ghdl.ghw"
-            self.command_arguments.append('--run_options')
-            self.command_arguments.append("\\--psl-report=" + ghdl_psl_report_file + " --wave=" + ghdl_vcd_file)
+            self.command_arguments.append("--run_options")
+            self.command_arguments.append(
+                "\\--psl-report=" + ghdl_psl_report_file + " --wave=" + ghdl_vcd_file
+            )
 
     def _prepare_for_verification(self, outpath):
         self._prepare_output_directory(outpath)
@@ -54,13 +58,17 @@ class VerificationTarget:
     def _verify(self):
         print("Verifying core: " + self.core_name + ", target: " + self.target_name)
 
-        output = subprocess.run([self.command] + self.command_arguments, capture_output=True, encoding='utf-8')
+        output = subprocess.run(
+            [self.command] + self.command_arguments,
+            capture_output=True,
+            encoding="utf-8",
+        )
 
         if output.returncode == 0:
             self.passed = True
 
-        self.number_of_errors = output.stdout.lower().count('error')
-        self.number_of_warnings = output.stdout.lower().count('warn')
+        self.number_of_errors = output.stdout.lower().count("error")
+        self.number_of_warnings = output.stdout.lower().count("warn")
 
         return output
 
@@ -69,7 +77,7 @@ class VerificationTarget:
 
         output = self._verify()
 
-        with open(self.outpath + 'output.txt', 'w') as f:
+        with open(self.outpath + "output.txt", "w") as f:
             f.write("************************************************************\n")
             f.write("*****                      STDERR                      *****\n")
             f.write("************************************************************\n\n")
@@ -123,17 +131,17 @@ def from_file(file):
         except yaml.YAMLError as exc:
             print(exc)
 
-    if 'targets' not in yaml_dict:
+    if "targets" not in yaml_dict:
         return []
 
     verification_targets = []
-    for target in yaml_dict['targets']:
-        if target.startswith('tb_') or target.endswith('_tb'):
+    for target in yaml_dict["targets"]:
+        if target.startswith("tb_") or target.endswith("_tb"):
             ver_target = VerificationTarget()
             ver_target.core_file = f.name
-            ver_target.core_name = yaml_dict['name']
+            ver_target.core_name = yaml_dict["name"]
             ver_target.target_name = target
-            ver_target.eda_tool = yaml_dict['targets'][target]['default_tool']
+            ver_target.eda_tool = yaml_dict["targets"][target]["default_tool"]
             verification_targets.append(ver_target)
 
     return verification_targets
