@@ -74,19 +74,21 @@ def check_workpath_exists(path):
 
 
 def verify_single_core(verification_targets, core, target, outpath):
+    core_found = False
     ver_targets = []
     for t in verification_targets:
         if t.core_name == core:
+            core_found = True
             if target is None or t.target_name == target:
                 ver_targets.append(t)
 
+    if not core_found:
+        print("Core: " + core + " not found")
+        exit(1)
+
     if not ver_targets:
-        print(
-            "No verification targets found for given core: "
-            + core
-            + ", target: "
-            + target
-        )
+        print("No verification targets found for core: " + core + ", target: " + target)
+        exit(1)
 
     for t in ver_targets:
         t.verify_to_console(outpath)
