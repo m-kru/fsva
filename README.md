@@ -2,7 +2,10 @@
 
 ## Status
 The project is considered as finished.
-Only bug fixes and minor improvements not breaking backward compatibility will be accepted.
+Only following changes will be accepted:
+- new tools support,
+- bug fixes,
+- minor improvements not breaking backward compatibility.
 
 ## Introduction
 
