@@ -1,10 +1,14 @@
 # fsva - FuseSoc Verification Automation
 
+## Status
+The project is considered as finished.
+Only bug fixes and minor improvements not breaking backward compatibility will be accepted.
+
 ## Introduction
 
 FuseSoc Verification Automation (fsva) is a tool that aims to automate the verification process of libraries and HDL design projects managed with [FuseSoc](https://github.com/olofk/fusesoc) build tool/system.
 
-fsva in no way duplicates or replaces functionalities provided by the FuseSoc.
+Fsva in no way duplicates or replaces functionalities provided by the FuseSoc.
 Colloquially speaking, fsva is a wrapper for FuseSoc, automating the verification process.
 It simply detects and runs verification targets, and parses verification results.
 
@@ -12,11 +16,11 @@ It simply detects and runs verification targets, and parses verification results
 The major goal is to easily integrate project/libraries described in FuseSoc into Continuous Integration workflow.
 FuseSoc is more than good for building and running single targets, however if you want to run multiple verificaiton targets it keeps rebuilding verification frameworks.
 This particular operation is redundant and time consuming.
-fsva assumes that verification frameworks (such as [UVVM](https://github.com/UVVM/UVVM) or [OSVVM](https://github.com/OSVVM/OSVVM)) are already pre-compiled (pre-analyzed) for simulation engines.
+Fsva assumes that verification frameworks (such as [UVVM](https://github.com/UVVM/UVVM) or [OSVVM](https://github.com/OSVVM/OSVVM)) are already pre-compiled (pre-analyzed) for simulation engines.
 What is more, fsva extends FuseSoc by parsing verification results.
 
 ## How it works
-fsva scans recursively for `.core` files and fetches all targets with name `tb` or name starting with `tb_` or ending with `_tb`.
+Fsva scans recursively for `.core` files and fetches all targets with name `tb` or name starting with `tb_` or ending with `_tb`.
 Then it runs these targets calling FuseSoc run command and captures stdout and stderr.
 By default verification targets are run in parallel.
 The default number of concurrent processes equals `multiprocessing.cpu_count()`.
@@ -45,8 +49,12 @@ _fsva/
     └── summary
 ```
 
-If any extra parsing of the verification results is needed (for example in case of metric driven verification) in the future, it will be based on prefix or suffix indicating verification framework/infrastructure.
-For instance, for UVVM it will be `tb_uvvm_` / `_uvvm_tb`, respectively for OSVVM it will be `tb_osvvm_` / `_osvvm_tb`.
+Fsva does not, and never will, perform any advanced results parsing such as scoreboard analysis or UVM coverage analysis.
+Fsva does one thing, and tries to do it well.
+
+If one needs advanced results parsing (for example in case of metric driven verification), then the proper parser needs to be run after fsva has finished.
+To make the discovery of reuslts for such test benches easier, one can use special form of prefix or suffix indicating verification framework, infrastructure etc.
+For instance, for UVVM one can use  `tb_uvvm_` / `_uvvm_tb`, respectively for OSVVM one can use `tb_osvvm_` / `_osvvm_tb`.
 
 If FuseSoc supports formal verification targets in the future, they will be fetched based on `fv_` prefix or `_fv` suffix.
 
