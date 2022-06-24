@@ -56,7 +56,7 @@ class VerificationTarget:
         self._prepare_run_options()
 
     def _verify(self):
-        print("Verifying core: " + self.core_name + ", target: " + self.target_name)
+        print(self.core_name + " " + self.target_name)
 
         output = subprocess.run(
             [self.command] + self.command_arguments,

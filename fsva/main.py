@@ -116,27 +116,12 @@ def summarize(verification_targets, outpath, start_time):
         for target in verification_targets:
             if target.passed:
                 print_summary(
-                    f,
-                    "PASSED: core: "
-                    + target.core_name
-                    + ", target: "
-                    + target.target_name
-                    + "\n",
+                    f, "PASSED: " + target.core_name + " " + target.target_name
                 )
             else:
                 all_passed = False
                 print_summary(
-                    f,
-                    "FAILED: core: "
-                    + target.core_name
-                    + ", target: "
-                    + target.target_name
-                    + "\nRun with:\n"
-                    + "fsva "
-                    + target.core_name
-                    + " "
-                    + target.target_name
-                    + "\n",
+                    f, "FAILED: " + target.core_name + " " + target.target_name
                 )
 
             if target.number_of_errors > 0:
@@ -169,7 +154,7 @@ def summarize(verification_targets, outpath, start_time):
 
             if not target.passed or target.number_of_warnings > 0:
                 print_summary(
-                    f, "For more details check directory: " + target.outpath + "\n"
+                    f, "\nFor more details check directory: " + target.outpath
                 )
 
             print_summary(f, "\n")
@@ -185,7 +170,7 @@ VERIFICATION SUMMARY:
   PASSED:   {} ({:.2%})
   FAILED:   {} ({:.2%})
   ERRORS:   {}
-  WARNINGS: {}\n
+  WARNINGS: {}
 """.format(
             hours,
             minutes,
