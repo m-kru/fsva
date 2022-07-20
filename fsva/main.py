@@ -134,48 +134,26 @@ def summarize(verification_targets, outpath, start_time):
         for target in verification_targets:
             if target.passed:
                 print_summary(
-                    f, "PASSED: " + target.core_name + " " + target.target_name
+                    f, "PASSED: " + target.core_name + " " + target.target_name + "\n"
                 )
             else:
                 all_passed = False
                 print_summary(
-                    f, "FAILED: " + target.core_name + " " + target.target_name
+                    f, "FAILED: " + target.core_name + " " + target.target_name + "\n"
                 )
 
-            if target.number_of_errors > 0:
-                num_errors += target.number_of_errors
+            if target.errors_count > 0:
+                num_errors += target.errors_count
+                print_summary(f, "ERRORS " + str(target.errors_count) + "\n")
 
+            if target.warnings_count > 0:
+                num_warnings += target.warnings_count
+                print_summary(f, "WARNINGS " + str(target.warnings_count) + "\n")
+
+            if not target.passed or target.warnings_count > 0:
                 print_summary(
-                    f,
-                    "ERRORS ("
-                    + str(target.number_of_errors)
-                    + "): core: "
-                    + target.core_name
-                    + ", target: "
-                    + target.target_name
-                    + "\n",
+                    f, "For more details check directory: " + target.outpath + "\n"
                 )
-
-            if target.number_of_warnings > 0:
-                num_warnings += target.number_of_warnings
-
-                print_summary(
-                    f,
-                    "WARNINGS ("
-                    + str(target.number_of_warnings)
-                    + "): core: "
-                    + target.core_name
-                    + ", target: "
-                    + target.target_name
-                    + "}\n",
-                )
-
-            if not target.passed or target.number_of_warnings > 0:
-                print_summary(
-                    f, "\nFor more details check directory: " + target.outpath
-                )
-
-            print_summary(f, "\n")
 
         s = (datetime.now() - start_time).seconds
         hours, remainder = divmod(s, 3600)
