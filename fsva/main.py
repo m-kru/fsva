@@ -151,17 +151,15 @@ def summarize(targets, outpath, start_time):
                 print_summary(f, "WARNINGS " + str(target.warnings_count) + "\n")
 
             if not target.passed or target.warnings_count > 0:
-                print_summary(
-                    f, "For more details check directory: " + target.outpath + "\n"
-                )
+                print_summary(f, "DETAILS: " + target.outpath + "\n")
 
         s = (datetime.now() - start_time).seconds
         hours, remainder = divmod(s, 3600)
         minutes, seconds = divmod(remainder, 60)
 
         summary = """
-VERIFICATION SUMMARY:
-  Total verification time: {} h {} min {} s
+SUMMARY:
+  TOTAL TIME: {} h {} min {} s
   TARGETS:  {}
   PASSED:   {} ({:.2%})
   FAILED:   {} ({:.2%})
