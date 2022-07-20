@@ -14,7 +14,7 @@ from fsva import verification_target
 VERSION = "1.1.0"
 
 
-def parse_command_line_arguments():
+def parse_cmd_line_args():
     parser = argparse.ArgumentParser(
         prog="fsva",
         description="FuseSoc Verification Automation (fsva) - tool for automating verification process for HDL projects using FuseSoc build tool.",
@@ -90,8 +90,13 @@ def verify_single_core(verification_targets, core, target, outpath):
         print("No verification targets found for core: " + core + ", target: " + target)
         exit(1)
 
+    fail_count = 0
     for t in ver_targets:
         t.verify_to_console(outpath)
+        if not t.passed:
+            fail_count += 1
+
+    return fail_count
 
 
 def print_summary(file, msg):
@@ -212,7 +217,7 @@ def compress_output_directory(outpath):
 
 
 def main():
-    cmd_line_args = parse_command_line_arguments()
+    cmd_line_args = parse_cmd_line_args()
 
     check_fusesoc_installed()
 
@@ -242,10 +247,15 @@ def main():
 
     if cmd_line_args.core:
         outpath += "tmp"
-        verify_single_core(
-            verification_targets, cmd_line_args.core, cmd_line_args.target, outpath
-        )
-        exit(0)
+        if (
+            verify_single_core(
+                verification_targets, cmd_line_args.core, cmd_line_args.target, outpath
+            )
+            > 0
+        ):
+            exit(1)
+        else:
+            exit(0)
 
     outpath += datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
