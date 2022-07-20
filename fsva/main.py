@@ -73,20 +73,20 @@ def check_workpath_exists(path):
         exit(1)
 
 
-"""
-Parameters:
------------
-targets
-    List of verification targets found in all .core files.
-core
-    Core name.
-target
-    Target name. If target is None, then all verification targets
-    for specified core are run.
-"""
-
-
-def verify_single_core(targets, core, target):
+def verify_single_core(targets, core, target, outpath):
+    """
+    Parameters:
+    -----------
+    targets
+        List of verification targets found in all .core files.
+    core
+        Core name.
+    target
+        Target name. If target is None, then all verification targets
+        for specified core are run.
+    outpath
+        Output path.
+    """
     core_found = False
     core_targets = []
     for t in targets:
@@ -105,7 +105,7 @@ def verify_single_core(targets, core, target):
 
     fail_count = 0
     for t in core_targets:
-        t.verify_to_console()
+        t.verify_to_console(outpath)
         if not t.passed:
             fail_count += 1
 

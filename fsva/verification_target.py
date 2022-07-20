@@ -10,13 +10,13 @@ class VerificationTarget:
         self.target_name = None
         self.eda_tool = None
         self.outpath = (None,)
-        # Attributes for verification command.
-        self.command = "fusesoc"
-        self.command_arguments = ["--cores-root", ".", "run", "--no-export", "--target"]
-        # Attributes for verification results.
+        # Verification command attributes.
+        self.cmd = "fusesoc"
+        self.cmd_args = ["--cores-root", ".", "run", "--no-export", "--target"]
+        # Verification result attributes.
         self.passed = False
-        self.number_of_errors = 0
-        self.number_of_warnings = 0
+        self.errors_count = 0
+        self.warnings_count = 0
         # TODO: add attribute with time for verification
 
     def _prepare_output_directory(self, outpath):
@@ -29,15 +29,15 @@ class VerificationTarget:
             pass
 
     def _prepare_analyze_options(self):
-        self.command_arguments.append(self.target_name)
-        self.command_arguments.append(self.core_name)
+        self.cmd_args.append(self.target_name)
+        self.cmd_args.append(self.core_name)
 
         # Add path for pre analyzed libraries for GHDL.
         #  Right now it is hardcoded to the default GHDL installation path.
         #  If there is a need correct path will be detected automatically.
         if self.eda_tool == "ghdl":
-            self.command_arguments.append("--analyze_options")
-            self.command_arguments.append(
+            self.cmd_args.append("--analyze_options")
+            self.cmd_args.append(
                 "\\-P/usr/local/lib/ghdl/vendors -frelaxed-rules -fpsl"
             )
 
@@ -45,14 +45,13 @@ class VerificationTarget:
         if self.eda_tool == "ghdl":
             ghdl_psl_report_file = self.outpath + "ghdl_psl_report.json"
             ghdl_vcd_file = self.outpath + "ghdl.ghw"
-            self.command_arguments.append("--run_options")
-            self.command_arguments.append(
+            self.cmd_args.append("--run_options")
+            self.cmd_args.append(
                 "\\--psl-report=" + ghdl_psl_report_file + " --wave=" + ghdl_vcd_file
             )
 
     def _prepare_for_verification(self, outpath):
-        if outpath is not None:
-            self._prepare_output_directory(outpath)
+        self._prepare_output_directory(outpath)
         self._prepare_analyze_options()
         self._prepare_run_options()
 
@@ -60,16 +59,14 @@ class VerificationTarget:
         print(self.core_name + " " + self.target_name)
 
         output = subprocess.run(
-            [self.command] + self.command_arguments,
-            capture_output=True,
-            encoding="utf-8",
+            [self.cmd] + self.cmd_args, capture_output=True, encoding="utf-8"
         )
 
         if output.returncode == 0:
             self.passed = True
 
-        self.number_of_errors = output.stdout.lower().count("error")
-        self.number_of_warnings = output.stdout.lower().count("warn")
+        self.errors_count = output.stdout.lower().count("error")
+        self.warnings_count = output.stdout.lower().count("warn")
 
         return output
 
@@ -90,8 +87,8 @@ class VerificationTarget:
             f.write("************************************************************\n\n")
             f.write(output.stdout)
 
-    def verify_to_console(self):
-        self._prepare_for_verification(None)
+    def verify_to_console(self, outpath):
+        self._prepare_for_verification(outpath)
 
         output = self._verify()
 
@@ -114,8 +111,8 @@ class VerificationTarget:
         else:
             print("\033[91m" + "FAILED" + "\033[0m")
 
-        print("ERRORS:    " + str(self.number_of_errors))
-        print("WARNINGS:  " + str(self.number_of_warnings))
+        print("ERRORS:    " + str(self.errors_count))
+        print("WARNINGS:  " + str(self.warnings_count))
         print("")
 
 
