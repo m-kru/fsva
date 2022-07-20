@@ -51,7 +51,8 @@ class VerificationTarget:
             )
 
     def _prepare_for_verification(self, outpath):
-        self._prepare_output_directory(outpath)
+        if outpath is not None:
+            self._prepare_output_directory(outpath)
         self._prepare_analyze_options()
         self._prepare_run_options()
 
@@ -89,8 +90,8 @@ class VerificationTarget:
             f.write("************************************************************\n\n")
             f.write(output.stdout)
 
-    def verify_to_console(self, outpath):
-        self._prepare_for_verification(outpath)
+    def verify_to_console(self):
+        self._prepare_for_verification(None)
 
         output = self._verify()
 

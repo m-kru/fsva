@@ -73,26 +73,39 @@ def check_workpath_exists(path):
         exit(1)
 
 
-def verify_single_core(verification_targets, core, target, outpath):
+"""
+Parameters:
+-----------
+targets
+    List of verification targets found in all .core files.
+core
+    Core name.
+target
+    Target name. If target is None, then all verification targets
+    for specified core are run.
+"""
+
+
+def verify_single_core(targets, core, target):
     core_found = False
-    ver_targets = []
-    for t in verification_targets:
+    core_targets = []
+    for t in targets:
         if t.core_name == core:
             core_found = True
             if target is None or t.target_name == target:
-                ver_targets.append(t)
+                core_targets.append(t)
 
     if not core_found:
         print("Core: " + core + " not found")
         exit(1)
 
-    if not ver_targets:
+    if not core_targets:
         print("No verification targets found for core: " + core + ", target: " + target)
         exit(1)
 
     fail_count = 0
-    for t in ver_targets:
-        t.verify_to_console(outpath)
+    for t in core_targets:
+        t.verify_to_console()
         if not t.passed:
             fail_count += 1
 
@@ -217,12 +230,12 @@ def compress_output_directory(outpath):
 
 
 def main():
-    cmd_line_args = parse_cmd_line_args()
+    args = parse_cmd_line_args()
 
     check_fusesoc_installed()
 
-    check_workpath_exists(cmd_line_args.workpath)
-    workpath = os.path.abspath(cmd_line_args.workpath)
+    check_workpath_exists(args.workpath)
+    workpath = os.path.abspath(args.workpath)
     os.chdir(workpath)
 
     start_time = datetime.now()
@@ -235,45 +248,39 @@ def main():
         print("No .core files found under the workpath")
         exit(1)
 
-    verification_targets = []
+    # Collect verification targets from .core files.
+    targets = []
     for file in core_files:
-        verification_targets += verification_target.from_file(file)
+        targets += verification_target.from_file(file)
 
-    if not verification_targets:
+    if not targets:
         print("No verification targets found in .core files")
         exit(1)
 
-    outpath = workpath + "/" + cmd_line_args.outdir + "/"
+    outpath = workpath + "/" + args.outdir + "/"
 
-    if cmd_line_args.core:
+    if args.core:
         outpath += "tmp"
-        if (
-            verify_single_core(
-                verification_targets, cmd_line_args.core, cmd_line_args.target, outpath
-            )
-            > 0
-        ):
+        if verify_single_core(targets, args.core, args.target, outpath) > 0:
             exit(1)
         else:
             exit(0)
 
     outpath += datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    if int(cmd_line_args.numprocesses) < 1:
+    if int(args.numprocesses) < 1:
         workers = 1
     else:
-        workers = int(cmd_line_args.numprocesses)
+        workers = int(args.numprocesses)
 
-    print(
-        f"Running {len(verification_targets)} verification targets with {workers} workers.\n"
-    )
+    print(f"Running {len(targets)} verification targets with {workers} workers.\n")
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-        executor.map(lambda t: t.verify_to_file(outpath), verification_targets)
+        executor.map(lambda t: t.verify_to_file(outpath), targets)
 
-    summarize(verification_targets, outpath, start_time)
+    summarize(targets, outpath, start_time)
 
-    if cmd_line_args.compress:
+    if args.compress:
         compress_output_directory(outpath)
 
 
