@@ -11,7 +11,7 @@ import multiprocessing
 from fsva import verification_target
 
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 
 def parse_cmd_line_args():
