@@ -119,19 +119,19 @@ def print_summary(file, msg):
     print(msg, end="")
 
 
-def summarize(verification_targets, outpath, start_time):
-    num_targets = len(verification_targets)
-    num_passed = sum(1 for x in verification_targets if x.passed)
-    num_failed = num_targets - num_passed
+def summarize(targets, outpath, start_time):
+    targets_count = len(targets)
+    passed_count = sum(1 for x in targets if x.passed)
+    failed_count = targets_count - passed_count
     all_passed = True
 
     print()
 
     with open(outpath + "/summary", "w") as f:
-        num_errors = 0
-        num_warnings = 0
+        errors_count = 0
+        warnings_count = 0
 
-        for target in verification_targets:
+        for target in targets:
             if target.passed:
                 print_summary(
                     f, "PASSED: " + target.core_name + " " + target.target_name + "\n"
@@ -143,11 +143,11 @@ def summarize(verification_targets, outpath, start_time):
                 )
 
             if target.errors_count > 0:
-                num_errors += target.errors_count
+                errors_count += target.errors_count
                 print_summary(f, "ERRORS " + str(target.errors_count) + "\n")
 
             if target.warnings_count > 0:
-                num_warnings += target.warnings_count
+                warnings_count += target.warnings_count
                 print_summary(f, "WARNINGS " + str(target.warnings_count) + "\n")
 
             if not target.passed or target.warnings_count > 0:
@@ -171,13 +171,13 @@ VERIFICATION SUMMARY:
             hours,
             minutes,
             seconds,
-            num_targets,
-            num_passed,
-            num_passed / num_targets,
-            num_failed,
-            num_failed / num_targets,
-            num_errors,
-            num_warnings,
+            targets_count,
+            passed_count,
+            passed_count / targets_count,
+            failed_count,
+            failed_count / targets_count,
+            errors_count,
+            warnings_count,
         )
 
         print_summary(f, summary)
