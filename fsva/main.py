@@ -144,11 +144,11 @@ def summarize(targets, outpath, start_time):
 
             if target.errors_count > 0:
                 errors_count += target.errors_count
-                print_summary(f, "ERRORS " + str(target.errors_count) + "\n")
+                print_summary(f, "ERRORS: " + str(target.errors_count) + "\n")
 
             if target.warnings_count > 0:
                 warnings_count += target.warnings_count
-                print_summary(f, "WARNINGS " + str(target.warnings_count) + "\n")
+                print_summary(f, "WARNINGS: " + str(target.warnings_count) + "\n")
 
             if not target.passed or target.warnings_count > 0:
                 print_summary(f, "DETAILS: " + target.outpath + "\n")

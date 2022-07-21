@@ -3,3 +3,4 @@
 _fsva/*
 build/*
 .idea/*
+fsva/__pycache__/
